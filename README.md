@@ -28,6 +28,15 @@ WarGames is a static website (plain HTML, CSS and JavaScript, with D3 for the ma
 - **Run 300× odds:** a Monte Carlo summary showing win, draw and nuclear probabilities and which countries tend to join.
 - **Share:** a link that reproduces the scenario.
 
+## Install it as a phone app
+
+WarGames is a Progressive Web App. Once the site is live, open its link on your phone:
+
+- **Android (Chrome):** tap **⬇ Install app** in the header, or open the **⋮** menu and choose **Install app**.
+- **iPhone/iPad (Safari):** tap **Share**, then **Add to Home Screen**. The in-app **Install app** button shows these steps too.
+
+Once installed, it gets its own home-screen icon, opens full-screen without browser bars, and works offline after the first visit. If you change any site file, bump `VERSION` in `sw.js` so installed copies pick up the update.
+
 ## Short, shareable URLs
 
 Every view has a short hash route:
@@ -63,6 +72,9 @@ python3 -m http.server 8000
 
 ```
 index.html                 page shell & tabs
+manifest.webmanifest       app manifest (name, icons, colours)
+sw.js                      service worker (offline + installability)
+icons/                     app icons
 css/style.css              styles (dark "situation room" theme, responsive)
 data/countries-50m.json    world map (Natural Earth via world-atlas, public domain)
 js/data.js                 country dataset, alliances, rivalries, profiles

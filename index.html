@@ -5,7 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>WarGames — Global Conflict Analysis</title>
   <meta name="description" content="Analysis of every country's military, economic, soft power, patriotism and intelligence strength, a war-likelihood model, and an interactive hypothetical war-game simulator.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0a0e14">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="WarGames">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -20,6 +27,7 @@
       <a href="#/wargame" data-tab="wargame">War Game</a>
       <a href="#/method" data-tab="method">Methodology</a>
     </nav>
+    <button class="install-btn" id="installBtn" hidden>⬇ Install app</button>
   </header>
 
   <div id="loading" class="loading">Loading world data…</div>
@@ -171,6 +179,14 @@
       <div class="frontbar"><div class="fa" id="frontA"></div><div class="fb" id="frontB"></div><span id="frontLbl"></span></div>
     </div>
   </main>
+
+  <div class="install-sheet" id="installSheet" hidden>
+    <div class="install-card">
+      <h2>Install WarGames on your phone</h2>
+      <div id="installHelp"></div>
+      <button class="btn primary" id="installClose" style="width:100%;margin-top:12px">Got it</button>
+    </div>
+  </div>
 
   <!-- ============ METHOD ============ -->
   <main id="tab-method" class="tab" hidden>

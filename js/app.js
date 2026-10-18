@@ -125,7 +125,40 @@ const App = (() => {
       <p>Every view has a short address: <code>#/analysis</code>, <code>#/rankings</code>, <code>#/wargame</code>, <code>#/method</code>, and <code>#/country/USA</code> for any country (use its 3-letter code). War-game scenarios can be shared with <i>Copy a link to this scenario</i>, e.g. <code>#/wargame?a=CHN&amp;b=TWN&amp;s=A</code>.</p>`;
   }
 
+  /* ---------- installable app (PWA) ---------- */
+  function setupInstall() {
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+    const btn = document.getElementById('installBtn');
+    const sheet = document.getElementById('installSheet');
+    const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+    if (standalone) return;
+    const ua = navigator.userAgent;
+    const ios = /iPhone|iPad|iPod/.test(ua) || (ua.includes('Macintosh') && 'ontouchend' in document);
+    let deferred = null;
+    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; btn.hidden = false; });
+    window.addEventListener('appinstalled', () => { btn.hidden = true; deferred = null; });
+    // iPhone/iPad never fire beforeinstallprompt, so show manual steps instead
+    if (ios || /Android/.test(ua)) btn.hidden = false;
+    btn.onclick = async () => {
+      if (deferred) {
+        deferred.prompt();
+        await deferred.userChoice;
+        deferred = null;
+        return;
+      }
+      document.getElementById('installHelp').innerHTML = ios
+        ? `<ol><li>Open this page in <b>Safari</b>.</li><li>Tap the <b>Share</b> button (square with an up arrow).</li><li>Scroll down and tap <b>Add to Home Screen</b>, then <b>Add</b>.</li></ol>`
+        : `<ol><li>Open the browser menu <b>⋮</b> (top-right in Chrome).</li><li>Tap <b>Install app</b> or <b>Add to Home screen</b>.</li><li>Confirm — WarGames appears with your other apps.</li></ol>`;
+      sheet.hidden = false;
+    };
+    document.getElementById('installClose').onclick = () => (sheet.hidden = true);
+    sheet.onclick = e => { if (e.target === sheet) sheet.hidden = true; };
+  }
+
   window.addEventListener('hashchange', route);
+  setupInstall();
   document.addEventListener('DOMContentLoaded', boot);
   return { go };
 })();
