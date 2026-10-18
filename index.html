@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WarGames — Global Conflict Analysis</title>
+  <meta name="description" content="Analysis of every country's military, economic, soft power, patriotism and intelligence strength, a war-likelihood model, and an interactive hypothetical war-game simulator.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/analysis"><span class="brand-mark">⚔</span> WAR<b>GAMES</b></a>
+    <nav class="tabs" id="tabs">
+      <a href="#/analysis" data-tab="analysis">Global Analysis</a>
+      <a href="#/rankings" data-tab="rankings">Rankings</a>
+      <a href="#/wargame" data-tab="wargame">War Game</a>
+      <a href="#/method" data-tab="method">Methodology</a>
+    </nav>
+  </header>
+
+  <div id="loading" class="loading">Loading world data…</div>
+
+  <!-- ============ ANALYSIS ============ -->
+  <main id="tab-analysis" class="tab" hidden>
+    <div class="toolbar">
+      <div class="metric-pills" id="metricPills"></div>
+      <div class="search">
+        <input id="countrySearch" list="countryList" placeholder="Search a country…" autocomplete="off">
+        <datalist id="countryList"></datalist>
+      </div>
+    </div>
+    <div class="analysis-grid">
+      <section class="card map-card">
+        <div id="analysisMap" class="map-wrap"></div>
+        <div class="legend" id="legend"></div>
+        <button class="map-reset" id="analysisReset" title="Reset zoom">⤢</button>
+      </section>
+      <aside class="card dossier" id="dossier"></aside>
+    </div>
+    <section class="card">
+      <div class="card-head">
+        <h2>Global flashpoints — most likely conflicts (next 10 years)</h2>
+        <span class="muted">Model estimate · armed clash probability / full-scale war probability</span>
+      </div>
+      <div class="hotspots" id="hotspots"></div>
+    </section>
+  </main>
+
+  <!-- ============ RANKINGS ============ -->
+  <main id="tab-rankings" class="tab" hidden>
+    <section class="card">
+      <div class="card-head">
+        <h2>All countries</h2>
+        <input id="rankFilter" placeholder="Filter…" class="filter">
+      </div>
+      <div class="table-wrap"><table id="rankTable" class="rank-table"></table></div>
+    </section>
+  </main>
+
+  <!-- ============ WAR GAME ============ -->
+  <main id="tab-wargame" class="tab wargame" hidden>
+    <div id="wgMap" class="wg-map"></div>
+    <aside class="wg-panel wg-setup" id="wgSetup">
+      <div class="panel-head">
+        <h2>Scenario setup</h2>
+        <button class="icon-btn" data-collapse="wgSetup" title="Collapse">–</button>
+      </div>
+      <div class="panel-body">
+        <label class="field">Preset scenario
+          <select id="preset"></select>
+        </label>
+
+        <h3>Belligerents</h3>
+        <div class="click-mode">
+          <span class="muted">Map clicks add to:</span>
+          <button data-mode="A" class="mode-btn a active">Side A</button>
+          <button data-mode="B" class="mode-btn b">Side B</button>
+          <button data-mode="off" class="mode-btn">Off</button>
+        </div>
+        <div class="sides">
+          <div class="side side-a">
+            <div class="side-title">Side A <span class="muted">(★ = leader)</span></div>
+            <div class="chips" id="chipsA"></div>
+            <input class="add-country" data-side="A" list="countryList" placeholder="+ add country">
+            <div class="side-power" id="powerA"></div>
+          </div>
+          <button class="icon-btn swap" id="swapSides" title="Swap sides">⇄</button>
+          <div class="side side-b">
+            <div class="side-title">Side B</div>
+            <div class="chips" id="chipsB"></div>
+            <input class="add-country" data-side="B" list="countryList" placeholder="+ add country">
+            <div class="side-power" id="powerB"></div>
+          </div>
+        </div>
+
+        <h3>How the war starts</h3>
+        <div class="seg" id="surprise">
+          <button data-v="none" class="active">Declared war</button>
+          <button data-v="A">Side A surprise attack</button>
+          <button data-v="B">Side B surprise attack</button>
+        </div>
+
+        <h3>Side settings</h3>
+        <div class="seg side-switch" id="sideSwitch">
+          <button data-v="A" class="active a">Side A</button>
+          <button data-v="B" class="b">Side B</button>
+        </div>
+        <div id="sideSettings"></div>
+
+        <h3>War expansion</h3>
+        <label class="check"><input type="checkbox" id="autoAllies" checked> Allies & rivals may join automatically</label>
+        <label class="field">Max extra countries that can join: <b id="maxJoinsV">8</b>
+          <input type="range" id="maxJoins" min="0" max="25" value="8">
+        </label>
+        <div class="sched">
+          <div class="muted small">Force a country to join mid-war:</div>
+          <div class="sched-row">
+            <input id="schedCountry" list="countryList" placeholder="Country">
+            <select id="schedSide"><option value="A">Side A</option><option value="B">Side B</option></select>
+            <input id="schedDay" type="number" min="1" value="30" title="Day it joins">
+            <button id="schedAdd" class="btn small">Add</button>
+          </div>
+          <ul id="schedList" class="sched-list"></ul>
+        </div>
+
+        <h3>Timeline</h3>
+        <div class="seg wrap" id="timelineMode">
+          <button data-v="daily">Day-by-day</button>
+          <button data-v="weekly" class="active">Weekly</button>
+          <button data-v="monthly">Monthly</button>
+          <button data-v="phases">Phases</button>
+          <button data-v="headlines">Headlines only</button>
+        </div>
+        <label class="field">Maximum length
+          <select id="maxDays">
+            <option value="90">3 months</option>
+            <option value="180">6 months</option>
+            <option value="365">1 year</option>
+            <option value="730" selected>2 years</option>
+            <option value="1825">5 years</option>
+          </select>
+        </label>
+        <label class="field">Random seed
+          <span class="seed-row"><input type="number" id="seed" value="1"><button class="btn small" id="reseed" title="Random seed">🎲</button></span>
+        </label>
+
+        <div class="run-row">
+          <button class="btn primary" id="runSim">▶ Run war</button>
+          <button class="btn" id="runMC" title="Run 300 simulations and show the odds">Run 300× odds</button>
+        </div>
+        <div class="muted small" id="shareRow"></div>
+      </div>
+    </aside>
+
+    <aside class="wg-panel wg-results" id="wgResults" hidden>
+      <div class="panel-head">
+        <h2 id="resTitle">Result</h2>
+        <button class="icon-btn" data-collapse="wgResults" title="Collapse">–</button>
+      </div>
+      <div class="panel-body" id="resBody"></div>
+    </aside>
+
+    <div class="playbar" id="playbar" hidden>
+      <button class="icon-btn" id="playBtn">▶</button>
+      <input type="range" id="dayScrub" min="0" max="100" value="0">
+      <span class="mono" id="dayLabel">Day 0</span>
+      <div class="frontbar"><div class="fa" id="frontA"></div><div class="fb" id="frontB"></div><span id="frontLbl"></span></div>
+    </div>
+  </main>
+
+  <!-- ============ METHOD ============ -->
+  <main id="tab-method" class="tab" hidden>
+    <section class="card prose" id="methodBody"></section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/model.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/sim.js"></script>
+  <script src="js/analysis.js"></script>
+  <script src="js/wargame.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
